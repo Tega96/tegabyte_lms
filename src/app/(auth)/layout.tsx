@@ -23,7 +23,7 @@ const AuthLayout = ({children}: {children: React.ReactNode}) => {
                     href="/" 
                     className="flex gap-2 items-center self-center font-medium"
                 >
-                    <Image src={Logo} alt="Logo" width={24} height={24} />
+                    <Image src={Logo} alt="Logo" width="24" height={24} className="w-auto" />
                     <h2 className="text-lg">Tegabyte Academy</h2>
                 </Link>
                 {children}

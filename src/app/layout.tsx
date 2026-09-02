@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-
+import { Toaster } from "@/components/ui/sonner";
 
 const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'});
 
@@ -37,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
