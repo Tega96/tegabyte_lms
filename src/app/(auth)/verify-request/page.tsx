@@ -8,19 +8,29 @@ import { Loader2, Verified } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+// import { Suspense } from 'react'
+
 
 
 
 const VerifyRequest = () => {
     const router = useRouter();
-    const [otp, setOtp] = useState("")
+    const [otp, setOtp] = useState('')
     const [verifyOtpPending, startVerifyOtpTransition] = useTransition();
+    
     const params = useSearchParams();
+    console.log("Full URL:", window.location.href)
+    console.log("Params params.toString()")
     const email = params.get("email") as string;
 
     const isOtpCompleted = otp.length === 6;
 
     const verifyOtp = () => {
+        if (!email) {
+            toast.error("Missing email. Please request a new code");
+            return;
+        }
+        
         startVerifyOtpTransition( async () => {
             await authClient.signIn.emailOtp({
                 email: email,
@@ -30,8 +40,8 @@ const VerifyRequest = () => {
                         toast.success('Email verified successfully')
                         router.push('/')
                     },
-                    onError: () => {
-                        toast.error('Email verification failed. Please try again')
+                    onError: (ctx) => {
+                        toast.error(ctx.error.message || 'Email verification failed');
                     }
                 }
             })
@@ -41,7 +51,7 @@ const VerifyRequest = () => {
     return (
         <Card className="w-full mx-auto">
             <CardHeader className="text-center">
-                <CardTitle text-xl> Please check your email</CardTitle>
+                <CardTitle className="text-xl"> Please check your email</CardTitle>
                 <CardDescription>
                     We have sent a verification code to your email address.
                     Please open your email and paste the code below.
@@ -74,7 +84,7 @@ const VerifyRequest = () => {
                     disabled={verifyOtpPending || !isOtpCompleted}
                 >
                     {verifyOtpPending ? (
-                        <div>
+                        <div className="flex text-center gap-2">
                             <Loader2 className="size-4 animate-rotate" />
                             <span className="">Loading...</span>
                         </div>

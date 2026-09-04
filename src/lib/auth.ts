@@ -20,13 +20,15 @@ export const auth = betterAuth({
     plugins: [
         emailOTP({
             async sendVerificationOTP({ email, otp }) { 
+                console.log("Sending OTP", otp, "to", email)
                 await resend.emails.send({
-                    from: 'Tegabyte-LMS <onboarding@resend.dev>',
+                    from: 'onboarding@resend.dev',
                     to: [email],
                     subject: 'Tegabyte LMS - Verify your email',
                     html: `<p>Welcome to Tegabyte LMS. Your Otp is<strong>${otp}</strong>!</p>`
                 });
-            }
+            },
+            expiresIn: 300,
         }),
     ]
 });

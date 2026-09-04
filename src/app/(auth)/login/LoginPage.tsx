@@ -43,7 +43,7 @@ const LoginPage = () => {
                 fetchOptions: {
                     onSuccess: () => {
                         toast.success("Email sent successfully")
-                        router.push('/verify-request')
+                        router.push(`/verify-request?email=${encodeURIComponent(email)}`)
                     },
                     onError: () => {
                         toast.error("Error sending email")
