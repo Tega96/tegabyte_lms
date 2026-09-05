@@ -12,10 +12,14 @@
     "contract:emit": "prisma contract emit"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.58",
+    "@arcjet/inspect": "^1.11.0",
+    "@arcjet/next": "^1.11.0",
     "@base-ui/react": "^1.7.0",
     "@better-auth/prisma-adapter": "^1.7.2",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.10.0",
+    "ai": "^7.0.92",
     "better-auth": "^1.7.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

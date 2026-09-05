@@ -19,8 +19,6 @@ const VerifyRequest = () => {
     const [verifyOtpPending, startVerifyOtpTransition] = useTransition();
     
     const params = useSearchParams();
-    console.log("Full URL:", window.location.href)
-    console.log("Params params.toString()")
     const email = params.get("email") as string;
 
     const isOtpCompleted = otp.length === 6;
@@ -30,7 +28,7 @@ const VerifyRequest = () => {
             toast.error("Missing email. Please request a new code");
             return;
         }
-        
+
         startVerifyOtpTransition( async () => {
             await authClient.signIn.emailOtp({
                 email: email,
@@ -40,7 +38,7 @@ const VerifyRequest = () => {
                         toast.success('Email verified successfully')
                         router.push('/')
                     },
-                    onError: (ctx) => {
+                    onError: (ctx: any) => {
                         toast.error(ctx.error.message || 'Email verification failed');
                     }
                 }
