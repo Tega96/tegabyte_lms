@@ -13,8 +13,8 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import slugify from 'slugify';
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tiptap } from "@tiptap/react"
 import { RichTextEditor } from "@/components/rich-text-editor/Editor"
+import Uploader from "@/components/file-upload/Uploader"
 
 
 
@@ -139,12 +139,7 @@ const CourseCreationPage = () => {
                                 render={({ field, fieldState }) => (
                                     <Field className="w-full">
                                         <FieldLabel > Description</FieldLabel>
-                                        <RichTextEditor />
-                                        <Textarea 
-                                            {...field} 
-                                            placeholder="Description"
-                                            className="min-h-[120px]"
-                                        />
+                                        <RichTextEditor field={field} />
                                         {fieldState.invalid && (
                                             <FieldError errors={[fieldState.error]} />
                                         )}
@@ -157,10 +152,7 @@ const CourseCreationPage = () => {
                                 render={({ field, fieldState }) => (
                                     <Field className="w-full">
                                         <FieldLabel > Thumbnail image</FieldLabel>
-                                        <Input 
-                                            {...field} 
-                                            placeholder="thumbnail url"
-                                        />
+                                        <Uploader />
                                         {fieldState.invalid && (
                                             <FieldError errors={[fieldState.error]} />
                                         )}
