@@ -1,4 +1,5 @@
 "use client"
+
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, PlusIcon, SparkleIcon } from "lucide-react"
@@ -12,6 +13,8 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field
 import slugify from 'slugify';
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tiptap } from "@tiptap/react"
+import { RichTextEditor } from "@/components/rich-text-editor/Editor"
 
 
 
@@ -136,6 +139,7 @@ const CourseCreationPage = () => {
                                 render={({ field, fieldState }) => (
                                     <Field className="w-full">
                                         <FieldLabel > Description</FieldLabel>
+                                        <RichTextEditor />
                                         <Textarea 
                                             {...field} 
                                             placeholder="Description"
