@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const courseLevels = ["Beginner", "Intermediate", "Advance"]
 export const courseStatus = ["Draft", "Published", "Archived"]
@@ -21,6 +21,6 @@ export const courseSchema = z.object({
     smallDescription: z.string()
     .min(3, {message: "Small description must be at least 3 characters long"})
     .max(200,{message: "Small description must be at most 200 characters long"}),
-    slug: z.string().min(3 {message: 'Slug must be at least 3 characters long'}),
+    slug: z.string().min(3, {message: 'Slug must be at least 3 characters long'}),
     status: z.enum(courseStatus),
 })
