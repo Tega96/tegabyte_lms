@@ -1,0 +1,1 @@
+Slug generation. - generate a slug from the title input. 
