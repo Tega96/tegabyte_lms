@@ -1,14 +1,64 @@
 import {useDropzone} from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { RenderEmptyState, RenderErrorState } from "./RenderState";
 import { toast } from "sonner";
+import {v4 as uuidv4} from 'uuid'
 
+
+interface UploaderState {
+    id: string | null,
+    file: File | null;
+    uploading: boolean;
+    progress: number;
+    key?: string;
+    isDeleting: boolean;
+    error: boolean;
+    objectUrl?: string;
+    fileType: "image" | "video"
+}
 
 export default function Uploader() {
-    const onDrop = useCallback((acceptedFiles: File[]) => {
+    // State to store dropped file.
+    const [fileState, setFileState] = useState<UploaderState>({
+        error: false,
+        file: null,
+        id: null,
+        uploading: false,
+        progress: 0,
+        isDeleting: false,
+        fileType: "image"
+    })
 
+    function uploadFile(file: File) {
+        setFileState((prev) => ({
+            ...prev,
+            uploading: true,
+            progress: 0,
+        }));
+
+        try {
+            // Generate a presigned url
+        } catch {}
+    }
+
+
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+            const file = acceptedFiles[0]
+
+            setFileState({
+                file: file,
+                uploading: false,
+                progress: 0, 
+                objectUrl: URL.createObjectURL(file),
+                error: false,
+                id: uuidv4(),
+                isDeleting: false,
+                fileType: "image",
+            });
+        }
     }, []);
 
     function rejectedFiles(fileRejection: FileRejection[]) {
