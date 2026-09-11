@@ -2,7 +2,7 @@ import {useDropzone} from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
-import { RenderEmptyState, RenderErrorState } from "./RenderState";
+import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState";
 import { toast } from "sonner";
 import {v4 as uuidv4} from 'uuid'
 
@@ -31,6 +31,7 @@ export default function Uploader() {
         fileType: "image"
     })
 
+    // Function to upload file
     async function uploadFile(file: File) {
         setFileState((prev) => ({
             ...prev,
@@ -94,14 +95,15 @@ export default function Uploader() {
                         reject(new Error('Upload failed'))
                     }
 
-                    xhr.onerror = () => {
-                        reject (new Error("Upload failed"))
-                    };
+                }
 
-                    xhr.open('PUT', presignedUrl);
-                    xhr.setRequestHeader('Content-Type', file.type);
-                    xhr.send(file);
-                }                
+                xhr.onerror = () => {
+                    reject (new Error("Upload failed"))
+                };
+
+                xhr.open('PUT', presignedUrl);
+                xhr.setRequestHeader('Content-Type', file.type);
+                xhr.send(file);
             });            
         } catch {
             toast.error("Something went wrong");
@@ -130,6 +132,8 @@ export default function Uploader() {
                 isDeleting: false,
                 fileType: "image",
             });
+
+            uploadFile(file)
         }
     }, []);
 
@@ -153,8 +157,28 @@ export default function Uploader() {
         }
     }
 
+    function renderContent() {
+        if (fileState.uploading) {
+            return (
+                <RenderUploadingState 
+                    file={fileState.file as File}
+                    progress={fileState.progress} 
+                />
+            )
+        }
+        if (fileState.error) {
+            return <RenderErrorState />
+        }
+        if (fileState.objectUrl) {
+            return <RenderUploadedState previewUrl={fileState.objectUrl} />
+        } 
+
+        return <RenderEmptyState isDragActive={isDragActive} />
+    }
+
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
-        onDrop, accept: {"image/*": []},
+        onDrop, 
+        accept: {"image/*": []},
         maxFiles: 1,
         multiple: false,
         maxSize: 5 * 1024 * 1024, // 5mb calculation 
@@ -171,8 +195,7 @@ export default function Uploader() {
         >
             <CardContent className="flex items-center justify-center h-full w-full p-4">
                 <input {...getInputProps()} />
-                <RenderEmptyState isDragActive={isDragActive} />
-                {/* <RenderErrorState /> */}
+                {renderContent()}
             </CardContent>
         </Card>
     )
