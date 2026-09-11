@@ -1,7 +1,7 @@
 import {useDropzone} from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState";
 import { toast } from "sonner";
 import {v4 as uuidv4} from 'uuid'
@@ -122,6 +122,10 @@ export default function Uploader() {
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0]
 
+            if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+                URL.revokeObjectURL(fileState.objectUrl);
+            }
+
             setFileState({
                 file: file,
                 uploading: false,
@@ -135,7 +139,7 @@ export default function Uploader() {
 
             uploadFile(file)
         }
-    }, []);
+    }, [fileState.objectUrl]);
 
     function rejectedFiles(fileRejection: FileRejection[]) {
         if (fileRejection.length) {
@@ -175,6 +179,12 @@ export default function Uploader() {
 
         return <RenderEmptyState isDragActive={isDragActive} />
     }
+
+    useEffect(() => {
+        if (fileState.objectUrl && !fileState.objectUrl.includes("http")) {
+            URL.revokeObjectURL(fileState.objectUrl);
+        }
+    }, [fileState.objectUrl])
 
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
         onDrop, 
