@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState";
 import { toast } from "sonner";
 import {v4 as uuidv4} from 'uuid'
+import { Field } from "@base-ui/react";
 
 
 interface UploaderState {
@@ -18,8 +19,12 @@ interface UploaderState {
     objectUrl?: string;
     fileType: "image" | "video"
 }
+interface iAppValue {
+    value?: string;
+    onChange?: (value: string) => void;
+}
 
-export default function Uploader() {
+export function Uploader({ onChange, value }: iAppValue) {
     // State to store dropped file.
     const [fileState, setFileState] = useState<UploaderState>({
         error: false,
@@ -28,7 +33,8 @@ export default function Uploader() {
         uploading: false,
         progress: 0,
         isDeleting: false,
-        fileType: "image"
+        fileType: "image",
+        key: value,
     })
 
     // Function to upload file
@@ -89,6 +95,8 @@ export default function Uploader() {
                             uploading: false,
                             key: key
                         }));
+
+                        onChange?.(key);
                         toast.success("File uploaded successfully");
                         resolve();
                     } else {
@@ -141,6 +149,64 @@ export default function Uploader() {
         }
     }, [fileState.objectUrl]);
 
+    async function handleRemoveFile() {
+        if (fileState.isDeleting || !fileState.objectUrl) return;
+
+        try {
+            setFileState((prev) => ({
+                ...prev,
+                isDeleting: true,
+            }));
+
+            const response = await fetch("api/s3/delete", {
+                method: "DELETE",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    key: fileState.key,
+                })
+            });
+
+            if (!response.ok) {
+                toast.error("Failed to remove file from storage");
+                setFileState((prev) => ({
+                    ...prev,
+                    isDeleting: true,
+                    error: true,
+                }));
+
+                return;
+            }
+            
+            // Cleanup preview url
+            if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+                URL.revokeObjectURL(fileState.objectUrl);
+            }
+            onChange?.("")
+
+            setFileState((prev) => ({
+                file: null,
+                uploading: false,
+                progress: 0,
+                objectUrl: undefined,
+                error: false,
+                fileType: "image",
+                id: null,
+                isDeleting: false,
+            }))
+
+            toast.success("File removed successfully");
+
+        } catch {
+            toast.error("Error removing file. please try again");
+
+            setFileState((prev) => ({
+                ...prev,
+                isDeleting: false,
+                error: true,
+            }))
+        }
+    }
+
     function rejectedFiles(fileRejection: FileRejection[]) {
         if (fileRejection.length) {
             const tooManyFiles = fileRejection.find((rejection) => 
@@ -174,7 +240,11 @@ export default function Uploader() {
             return <RenderErrorState />
         }
         if (fileState.objectUrl) {
-            return <RenderUploadedState previewUrl={fileState.objectUrl} />
+            return <RenderUploadedState 
+                handleRemoveFile={handleRemoveFile} 
+                previewUrl={fileState.objectUrl} 
+                isDeleting={fileState.isDeleting}
+            />
         } 
 
         return <RenderEmptyState isDragActive={isDragActive} />
@@ -192,7 +262,8 @@ export default function Uploader() {
         maxFiles: 1,
         multiple: false,
         maxSize: 5 * 1024 * 1024, // 5mb calculation 
-        onDropRejected: rejectedFiles
+        onDropRejected: rejectedFiles,
+        disabled: fileState.uploading || !!fileState.objectUrl // double exclamation mark converts to boolean and sets to true. 
     });
 
     return (

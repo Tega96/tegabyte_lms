@@ -152,7 +152,8 @@ const CourseCreationPage = () => {
                                 render={({ field, fieldState }) => (
                                     <Field className="w-full">
                                         <FieldLabel > Thumbnail image</FieldLabel>
-                                        <Uploader />
+                                        <Uploader onChange={field.onChange} value={field.value} />
+
                                         {fieldState.invalid && (
                                             <FieldError errors={[fieldState.error]} />
                                         )}
